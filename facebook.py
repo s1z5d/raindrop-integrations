@@ -2,7 +2,9 @@
 
 import time
 import os
+import json
 
+import requests
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
@@ -16,9 +18,11 @@ import pyotp
 from dotenv import load_dotenv
 load_dotenv()
 
-FB_EMAIL=os.getenv('FB_EMAIL')
-FB_PASSWORD=os.getenv('FB_PASSWORD')
-FB_OTP=os.getenv('FB_OTP')
+FB_EMAIL = os.getenv('FB_EMAIL')
+FB_PASSWORD = os.getenv('FB_PASSWORD')
+FB_OTP = os.getenv('FB_OTP')
+
+RAINDROP_TOKEN = os.getenv('RAINDROP_TOKEN')
 
 option = Options()
 
@@ -76,10 +80,36 @@ while True:
     last_height = new_height
 
 links = []
+titles = []
 # get links
 link_elems = driver.find_elements_by_xpath("//span[contains(text(), 'Saved from')]//child::a[1]")
+title_elems = driver.find_elements_by_xpath("//span[contains(text(), 'Saved from')]//child::a[1]//child::span[1]")
 
-for le in link_elems:
+for le, te in zip(link_elems, title_elems):
     links.append(le.get_attribute("href"))
+    titles.append(le.get_attribute("innerHTML"))
 
 driver.close()
+
+print(len(links), len(titles))
+
+# add links to raindrop
+headers = {
+    'Authorization': 'Bearer ' +  RAINDROP_TOKEN,
+}
+for i in range(len(links)):    
+    payload = {
+        'link': links[i],
+        'tags': ['facebook'],
+        'excerpt': links[i],
+        'title': titles[i] + ' from Facebook'
+    }
+    r = requests.post('https://api.raindrop.io/rest/v1/raindrop', headers=headers, json=payload)
+    print(r.content)
+    time.sleep(1)
+
+
+# TODO:
+# - save links added in file
+# - get links that didn't work: span[contains(text(), 'Link •')]//preceding::a[1]
+# - optional: save page completely somehow?
