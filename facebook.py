@@ -27,6 +27,8 @@ FB_OTP = os.getenv('FB_OTP')
 RAINDROP_TOKEN = os.getenv('RAINDROP_TOKEN')
 
 # TODO:
+# combine both types of saved posts to be read in one go
+# some "saved from x's post"s don't have links on them - how to handle that?
 # - optional: save page completely somehow?
 
 option = Options()
