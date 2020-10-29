@@ -27,8 +27,8 @@ FB_OTP = os.getenv('FB_OTP')
 RAINDROP_TOKEN = os.getenv('RAINDROP_TOKEN')
 
 # TODO:
-# combine both types of saved posts to be read in one go
-# some "saved from x's post"s don't have links on them - how to handle that?
+# clean fbid, changes everytime
+# error handling and reporting
 # - optional: save page completely somehow?
 
 option = Options()
@@ -63,10 +63,6 @@ driver.find_element_by_id('checkpointSubmitButton').click()
 
 driver.get('https://www.facebook.com/saved')
 
-# get rid of notification popup
-driver.find_element_by_tag_name('body').send_keys(Keys.ESCAPE)
-
-
 # scroll to bottom of page https://stackoverflow.com/a/43299513
 SCROLL_PAUSE_TIME = 3
 
@@ -88,9 +84,9 @@ while True:
 
 links = []
 titles = []
+payloads = []
 
 # This bit works for links that are saved from posts
-# get links 
 link_elems = driver.find_elements_by_xpath("//span[contains(text(), 'Saved from')]//child::a[1]")
 title_elems = driver.find_elements_by_xpath("//span[contains(text(), 'Saved from')]//child::a[1]//child::span[1]")
 
@@ -98,16 +94,8 @@ for le, te in zip(link_elems, title_elems):
     links.append(le.get_attribute("href"))
     titles.append(le.get_attribute("innerHTML"))
 
-driver.close()
-
-print(len(links), len(titles))
-
-# add links to raindrop
-headers = {
-    'Authorization': 'Bearer ' +  RAINDROP_TOKEN,
-}
 for i in range(len(links)):    
-    with open('facebook.txt', 'a+') as f:
+    with open('facebook.txt', 'r+') as f:
         existing_links = f.read()
         if links[i] not in existing_links:
             f.write(links[i] + '\n')
@@ -117,43 +105,54 @@ for i in range(len(links)):
                 'excerpt': links[i],
                 'title': titles[i] + ' from Facebook'
             }
-            r = requests.post('https://api.raindrop.io/rest/v1/raindrop', headers=headers, json=payload)
-            print(r.content)
-            time.sleep(1)
+            payloads.append(payload)
 
-# This bit works for links that don't have any posts associated with them.
-# i = 1
-# while True:
-#     xpath_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/a | /html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/div/div[2]/div/div[2]/span'.format(i, i))
-#     if len(xpath_elems) == 0:
-#         break
-#     elif len(xpath_elems) == 1:
-#         # clean link
-#         link = xpath_elems[0].get_attribute("href")
-#         cleaned_link = re.sub(r"\?fbclid=.*", '', urllib.parse.unquote(link.replace("https://l.facebook.com/l.php?u=", '')))
-#         links.append(cleaned_link)
-#         title = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/a/span/span'.format(i)).get_attribute("innerHTML")
-#         titles.append(title)
-#     i = i + 1
+links = []
+titles = []
 
-# driver.close()
+# This bit works for links that don't have any posts associated with them (only seen in old saved links).
+i = 1
+while True:
+    xpath_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/a | /html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/div/div[2]/div/div[2]/span'.format(i, i))
+    if len(xpath_elems) == 0:
+        break
+    elif len(xpath_elems) == 1:
+        # clean link
+        link = xpath_elems[0].get_attribute("href")
+        cleaned_link = re.sub(r"\?fbclid=.*", '', urllib.parse.unquote(link.replace("https://l.facebook.com/l.php?u=", '')))
+        links.append(cleaned_link)
+        title = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/a/span/span'.format(i)).get_attribute("innerHTML")
+        titles.append(title)
+    i = i + 1
 
-# print(len(links), len(titles))
+driver.close()
 
-# # add links to raindrop
-# headers = {
-#     'Authorization': 'Bearer ' +  RAINDROP_TOKEN,
-# }
-# for i in range(len(links)):    
-#     with open('facebook.txt', 'a+') as f:
-#         existing_links = f.read()
-#         if links[i] not in existing_links:
-#             f.write(links[i] + '\n')
-#             payload = {
-#                 'link': links[i],
-#                 'tags': ['facebook_link'],
-#                 'excerpt': links[i] + '\n' + titles[i],
-#             }
-#             r = requests.post('https://api.raindrop.io/rest/v1/raindrop', headers=headers, json=payload)
-#             print(r.content)
-#             time.sleep(1)
+for i in range(len(links)):    
+    with open('facebook.txt', 'r+') as f:
+        existing_links = f.read()
+        if links[i] not in existing_links:
+            f.write(links[i] + '\n')
+            payload = {
+                'link': links[i],
+                'tags': ['facebook_link'],
+                'excerpt': links[i] + '\n' + titles[i],
+            }
+            payloads.append(payload)
+
+def file_len(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
+if file_len('facebook.txt') != len(payloads):
+    print("ERROR!!!!! Number of links didn't match, please check manually.")
+
+# add links to raindrop
+headers = {
+    'Authorization': 'Bearer ' +  RAINDROP_TOKEN,
+}
+for p in payloads:    
+    r = requests.post('https://api.raindrop.io/rest/v1/raindrop', headers=headers, json=p)
+    print(r.content)
+    time.sleep(1)
