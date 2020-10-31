@@ -27,8 +27,8 @@ FB_OTP = os.getenv('FB_OTP')
 RAINDROP_TOKEN = os.getenv('RAINDROP_TOKEN')
 
 # TODO:
-# clean fbid, changes everytime
-# error handling and reporting
+# - find way to fix total link count
+# - error handling and reporting
 # - optional: save page completely somehow?
 
 option = Options()
@@ -82,6 +82,7 @@ while True:
         break
     last_height = new_height
 
+total_links = 0
 links = []
 titles = []
 payloads = []
@@ -91,7 +92,10 @@ link_elems = driver.find_elements_by_xpath("//span[contains(text(), 'Saved from'
 title_elems = driver.find_elements_by_xpath("//span[contains(text(), 'Saved from')]//child::a[1]//child::span[1]")
 
 for le, te in zip(link_elems, title_elems):
-    links.append(le.get_attribute("href"))
+    # clean link
+    link = le.get_attribute("href")
+    cleaned_link = re.sub(r"[\?|&](fbclid|h)=.*", '', urllib.parse.unquote(link.replace("https://l.facebook.com/l.php?u=", '')))
+    links.append(cleaned_link)
     titles.append(le.get_attribute("innerHTML"))
 
 for i in range(len(links)):    
@@ -107,6 +111,7 @@ for i in range(len(links)):
             }
             payloads.append(payload)
 
+total_links += len(links)
 links = []
 titles = []
 
@@ -119,13 +124,15 @@ while True:
     elif len(xpath_elems) == 1:
         # clean link
         link = xpath_elems[0].get_attribute("href")
-        cleaned_link = re.sub(r"\?fbclid=.*", '', urllib.parse.unquote(link.replace("https://l.facebook.com/l.php?u=", '')))
+        cleaned_link = re.sub(r"[\?|&](fbclid|h)=.*", '', urllib.parse.unquote(link.replace("https://l.facebook.com/l.php?u=", '')))
         links.append(cleaned_link)
         title = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div[1]/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div[{}]/div/div/div/div[2]/a/span/span'.format(i)).get_attribute("innerHTML")
         titles.append(title)
     i = i + 1
 
 driver.close()
+
+total_links += len(links)
 
 for i in range(len(links)):    
     with open('facebook.txt', 'r+') as f:
@@ -145,7 +152,7 @@ def file_len(fname):
             pass
     return i + 1
 
-if file_len('facebook.txt') != len(payloads):
+if file_len('facebook.txt') != total_links:
     print("ERROR!!!!! Number of links didn't match, please check manually.")
 
 # add links to raindrop
