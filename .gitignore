@@ -1,4 +1,8 @@
+.vscode/
 .env
 
 # facebook
 facebook.txt
+
+# instagram
+node_modules
