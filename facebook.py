@@ -99,7 +99,8 @@ for le, te in zip(link_elems, title_elems):
     titles.append(le.get_attribute("innerHTML"))
 
 for i in range(len(links)):    
-    with open('facebook.txt', 'r+') as f:
+    with open('facebook.txt', 'a+') as f:
+        f.seek(0)
         existing_links = f.read()
         if links[i] not in existing_links:
             f.write(links[i] + '\n')
@@ -135,7 +136,8 @@ driver.close()
 total_links += len(links)
 
 for i in range(len(links)):    
-    with open('facebook.txt', 'r+') as f:
+    with open('facebook.txt', 'a+') as f:
+        f.seek(0)
         existing_links = f.read()
         if links[i] not in existing_links:
             f.write(links[i] + '\n')
