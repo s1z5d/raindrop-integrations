@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "dotenv": "^8.2.0",
-    "instagram-private-api": "^1.43.1"
+    "instagram-private-api": "^1.43.1",
+    "node-fetch": "^2.6.1"
   },
   "type": "module"
 }
