@@ -1,6 +1,8 @@
 // https://github.com/dilame/instagram-private-api#examples
 import { IgApiClient } from 'instagram-private-api';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import fetch from 'node-fetch';
+import promisify from 'util';
 
 dotenv.config()
 
@@ -21,6 +23,30 @@ ig.state.proxyUrl = process.env.IG_PROXY;
   process.nextTick(async () => await ig.simulate.postLoginFlow());
   // Create UserFeed instance to get loggedInUser's posts
   const savedFeed = ig.feed.saved(loggedInUser.pk);
-  let mySavedPostsFirstPage = await savedFeed.items()
-  console.log(mySavedPostsFirstPage[3]);
+  // let mySavedPostsFirstPage = await savedFeed.items()
+  // savedFeed.items()
+  let savedPosts = []
+  savedFeed.items$.subscribe(
+    posts => savedPosts.push(...posts),
+    error => console.log(error),
+    async () => {
+      
+      for (const sp of savedPosts) {
+        const res = await fetch('https://api.raindrop.io/rest/v1/raindrop', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + process.env.RAINDROP_TOKEN,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            link: 'https://instagram.com/p/' + sp.code + '/',
+            tags: ['instagram'],
+            title: sp.user.full_name + ' on Instagram',
+            excerpt: 'https://instagram.com/p/' + sp.code + '/'
+          })
+        });
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    }
+  )
 })();
