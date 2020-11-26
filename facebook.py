@@ -98,10 +98,10 @@ for le, te in zip(link_elems, title_elems):
     links.append(cleaned_link)
     titles.append(le.get_attribute("innerHTML"))
 
-for i in range(len(links)):    
-    with open('facebook.txt', 'a+') as f:
-        f.seek(0)
-        existing_links = f.read()
+with open('facebook.txt', 'a+') as f:
+    f.seek(0)
+    existing_links = f.read()
+    for i in range(len(links)):    
         if links[i] not in existing_links:
             f.write(links[i] + '\n')
             payload = {
@@ -135,10 +135,10 @@ driver.close()
 
 total_links += len(links)
 
-for i in range(len(links)):    
-    with open('facebook.txt', 'a+') as f:
-        f.seek(0)
-        existing_links = f.read()
+with open('facebook.txt', 'a+') as f:
+    f.seek(0)
+    existing_links = f.read()
+    for i in range(len(links)):    
         if links[i] not in existing_links:
             f.write(links[i] + '\n')
             payload = {
