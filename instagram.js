@@ -2,7 +2,7 @@
 import { IgApiClient } from 'instagram-private-api';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import promisify from 'util';
+import fs from 'fs/promises'
 
 dotenv.config()
 
@@ -23,15 +23,21 @@ ig.state.proxyUrl = process.env.IG_PROXY;
   process.nextTick(async () => await ig.simulate.postLoginFlow());
   // Create UserFeed instance to get loggedInUser's posts
   const savedFeed = ig.feed.saved(loggedInUser.pk);
-  // let mySavedPostsFirstPage = await savedFeed.items()
-  // savedFeed.items()
+  // Read existing saved links
+  let alreadySavedPosts = '';
+  try {
+    alreadySavedPosts = await fs.readFile('instagram.txt');
+  } catch {
+    await fs.writeFile('instagram.txt', '');
+  }
   let savedPosts = []
   savedFeed.items$.subscribe(
     posts => savedPosts.push(...posts),
     error => console.log(error),
-    async () => {
-      
+    async () => {    
       for (const sp of savedPosts) {
+        if (alreadySavedPosts.includes(sp.code)) continue;
+
         const res = await fetch('https://api.raindrop.io/rest/v1/raindrop', {
           method: 'POST',
           headers: {
@@ -42,9 +48,12 @@ ig.state.proxyUrl = process.env.IG_PROXY;
             link: 'https://instagram.com/p/' + sp.code + '/',
             tags: ['instagram'],
             title: sp.user.full_name + ' on Instagram',
-            excerpt: 'https://instagram.com/p/' + sp.code + '/'
+            excerpt: 'https://instagram.com/p/' + sp.code + '/\n\n' + (sp.caption ? sp.caption.text : '')
           })
         });
+        
+        await fs.appendFile('instagram.txt', sp.code + '\n')
+        
         await new Promise(r => setTimeout(r, 1000));
       }
     }
