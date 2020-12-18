@@ -27,6 +27,8 @@ FB_OTP = os.getenv('FB_OTP')
 RAINDROP_TOKEN = os.getenv('RAINDROP_TOKEN')
 
 # TODO:
+# - better way to handle already added links
+#   - try to only get first 10 links or so, and go back and check?
 # - find way to fix total link count
 # - error handling and reporting
 # - optional: save page completely somehow?
