@@ -2,7 +2,8 @@
 import { IgApiClient } from 'instagram-private-api';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import fs from 'fs/promises'
+import fs from 'fs/promises';
+import { generateToken } from 'node-2fa';
 
 dotenv.config()
 
@@ -17,7 +18,20 @@ ig.state.proxyUrl = process.env.IG_PROXY;
   // Execute all requests prior to authorization in the real Android application
   // Not required but recommended
   await ig.simulate.preLoginFlow();
-  const loggedInUser = await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
+  let loggedInUser;
+  try {
+    loggedInUser = await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
+  } catch (err) {
+    const username = err.response.body.two_factor_info.username;
+    const twoFactorIdentifier = err.response.body.two_factor_info.two_factor_identifier;
+    loggedInUser = await ig.account.twoFactorLogin({
+      username,
+      verificationCode: generateToken(process.env.IG_2FA).token,
+      twoFactorIdentifier,
+      verificationMethod: '0',
+      trustThisDevice: '1',
+    });
+  }
   // The same as preLoginFlow()
   // Optionally wrap it to process.nextTick so we dont need to wait ending of this bunch of requests
   process.nextTick(async () => await ig.simulate.postLoginFlow());
