@@ -94,7 +94,7 @@ for item in reddit.user.me().saved(limit=None):
     else:
         links.append({
             'link': item.permalink + '?context=10000',
-            'title': '[Reddit Commend: ' + item.subreddit.display_name + '] ' + item.submission.title,
+            'title': '[Reddit Comment: ' + item.subreddit.display_name + '] ' + item.submission.title,
             'sub': item.subreddit.display_name,
             'content': item.body
         })
