@@ -29,9 +29,10 @@ RAINDROP_TOKEN = os.getenv('RAINDROP_TOKEN')
 # TODO:
 # - better way to handle already added links
 #   - try to only get first 10 links or so, and go back and check?
+#   - while scrolling, get the bottom most link after a scroll and check if it already exists 
 # - find way to fix total link count
 # - error handling and reporting
-# - optional: save page completely somehow?
+
 
 option = Options()
 
