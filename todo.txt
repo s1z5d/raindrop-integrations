@@ -1,0 +1,5 @@
+* better counters
+* todos for individual scripts, especially performance
+* insta multiple images how?
+* shell script for running all
+* use a secret manager?
