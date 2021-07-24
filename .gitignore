@@ -1,13 +1,4 @@
 .vscode/
 .env
-
-# facebook
-facebook.txt
-
-# instagram
+*.txt
 node_modules
-instagram.txt
-
-# reddit
-sub_list.txt
-reddit.txt
