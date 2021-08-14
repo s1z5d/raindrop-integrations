@@ -1,7 +1,8 @@
 * better counters - especially when you run all scripts together
 * todos for individual scripts, especially performance in facebook
 * insta multiple images how?
-* shell script for running all
 * use a secret manager?
 * insta: single images can be saved directly
+* insta: random uuid for multiple images, as a tag
+* insta: more text for progress etc
 * put api call while writing to file for better recovery
