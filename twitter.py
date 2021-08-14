@@ -150,7 +150,7 @@ with open('twitter.txt', 'a+') as f:
             'link': links[i],
             'tags': ['twitter'],
             'excerpt': links[i] + '\n' + titles[i] + '\n' + texts[i],
-            'title': title[i]
+            'title': titles[i]
         }
         r = requests.post('https://api.raindrop.io/rest/v1/raindrop', headers=headers, json=payload)
         print(str(i + 1) + ' out of ' + str(l) + ' links added.')
