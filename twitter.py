@@ -38,19 +38,27 @@ option.add_experimental_option("prefs", {
 })
 
 driver = webdriver.Chrome(options=option, executable_path="/usr/bin/chromedriver")
-driver.get('https://www.twitter.com/login')
+driver.get('https://www.twitter.com/i/flow/login')
 
 done = False
 while not done:
     try:
-        email_elem = driver.find_element_by_css_selector("input[name*='email']")
+        email_elem = driver.find_element_by_css_selector("input[name*='username']")
         done = True
     except NoSuchElementException:
         time.sleep(1)
 
 email_elem.send_keys(TWITTER_EMAIL)
+email_elem.send_keys(Keys.ENTER)
 
-pass_elem = driver.find_element_by_css_selector("input[name*='pass']")
+done = False
+while not done:
+    try: 
+        pass_elem = driver.find_element_by_css_selector("input[name*='password']")
+        done = True
+    except NoSuchElementException:
+        time.sleep(1)
+
 pass_elem.send_keys(TWITTER_PASSWORD)
 pass_elem.send_keys(Keys.ENTER)
 
@@ -66,10 +74,12 @@ if (len(driver.find_elements_by_css_selector("input[name*='email']")) != 0):
 
 # time.sleep(2)
 
-otp_elem = driver.find_element_by_id("challenge_response")
+otp_elem = driver.find_element_by_css_selector("input[name*='text']")
 totp = pyotp.TOTP(TWITTER_OTP)
 otp_elem.send_keys(totp.now())
 otp_elem.send_keys(Keys.ENTER)
+
+time.sleep(5)
 
 driver.get('https://twitter.com/i/bookmarks')
 
