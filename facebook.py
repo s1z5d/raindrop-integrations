@@ -99,7 +99,7 @@ for le, te in zip(link_elems, title_elems):
     link = le.get_attribute("href")
     cleaned_link = re.sub(r"[\?|&](fbclid|h)=.*", '', urllib.parse.unquote(link.replace("https://l.facebook.com/l.php?u=", '')))
     links.append(cleaned_link)
-    titles.append(le.get_attribute("innerHTML"))
+    titles.append(te.get_attribute("innerHTML"))
 
 with open('facebook.txt', 'a+') as f:
     f.seek(0)
