@@ -43,7 +43,7 @@ driver.get('https://www.twitter.com/i/flow/login')
 done = False
 while not done:
     try:
-        email_elem = driver.find_element_by_css_selector("input[name*='username']")
+        email_elem = driver.find_element_by_css_selector("input[name*='text']")
         done = True
     except NoSuchElementException:
         time.sleep(1)
