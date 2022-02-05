@@ -99,7 +99,8 @@ last_height = driver.execute_script("return document.body.scrollHeight")
 
 already_added = False
 while True:
-    xpath_elems = driver.find_elements_by_xpath("/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a")
+    xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a")
+    print(xpath_elems)
     if len(xpath_elems) != 0:
         link = xpath_elems[-1].get_attribute("href")
         if link in existing_links:
@@ -113,7 +114,7 @@ while True:
 
     i = 1
     while True:
-        xpath_elems = driver.find_elements_by_xpath("/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a".format(i))
+        xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a".format(i))
         if len(xpath_elems) == 0:
             break
         elif len(xpath_elems) == 1:
@@ -122,18 +123,22 @@ while True:
                 i = i + 1
                 continue
             links.append(link)
-            title = driver.find_element_by_xpath('/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div[1]/a'.format(i))
+            title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div[1]/a'.format(i))
             title = title.text.replace("\n", '')
             index = title.find('@')
             title = "Tweet from " + title[:index] + ' (' + title[index:] +  ')'
             titles.append(title)
-            text_elems = driver.find_elements_by_xpath('/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[1]/div/span'.format(i))
+            text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[1]/div/span'.format(i))
             text = ''
+            alt_text = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img'.format(i))
             if len(text_elems) != 0:
                 text = text_elems[0].text
+                if len(alt_text) != 0:
+                    text = text + '\n' + alt_text[-1].get_attribute("alt")
             texts.append(text)
         i = i + 1
 
+    print(links, texts)
     # Calculate new scroll height and compare with last scroll height
     new_height = driver.execute_script("return document.body.scrollHeight")
     if new_height == last_height or already_added:
