@@ -100,7 +100,6 @@ last_height = driver.execute_script("return document.body.scrollHeight")
 already_added = False
 while True:
     xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a")
-    print(xpath_elems)
     if len(xpath_elems) != 0:
         link = xpath_elems[-1].get_attribute("href")
         if link in existing_links:
@@ -138,13 +137,11 @@ while True:
             texts.append(text)
         i = i + 1
 
-    print(links, texts)
     # Calculate new scroll height and compare with last scroll height
     new_height = driver.execute_script("return document.body.scrollHeight")
     if new_height == last_height or already_added:
         break
     last_height = new_height
-
 
 
 driver.close()
