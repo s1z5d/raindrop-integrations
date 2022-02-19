@@ -4,5 +4,6 @@
 * use a secret manager?
 * insta: single images can be saved directly
 * insta: random uuid for multiple images, as a tag
-* insta: more text for progress etc
+* insta: paginate and check each page for existence
+* insta: fix unhandled promise error
 * put api call while writing to file for better recovery

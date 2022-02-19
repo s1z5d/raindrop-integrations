@@ -1,4 +1,5 @@
 // https://github.com/dilame/instagram-private-api#examples
+// Use Node 14 -- higher version kill unhandled promise errors, an instance of which is thrown at some point by the API library(?)
 import { IgApiClient } from 'instagram-private-api';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
@@ -6,7 +7,6 @@ import fs from 'fs/promises';
 import { generateToken } from 'node-2fa';
 
 dotenv.config()
-
 const ig = new IgApiClient();
 // You must generate device id's before login.
 // Id's generated based on seed
@@ -48,10 +48,11 @@ ig.state.proxyUrl = process.env.IG_PROXY;
   savedFeed.items$.subscribe(
     posts => savedPosts.push(...posts),
     error => console.log(error),
-    async () => {    
-      for (const sp of savedPosts) {
-        if (alreadySavedPosts.includes(sp.code)) continue;
-
+    async () => {
+      const newPosts = savedPosts.filter(sp => !alreadySavedPosts.includes(sp.code));
+      console.log(`Saving ${newPosts.length} Instagram post(s)...`);
+      let i = 1;
+      for (const sp of newPosts) {
         const res = await fetch('https://api.raindrop.io/rest/v1/raindrop', {
           method: 'POST',
           headers: {
@@ -65,7 +66,10 @@ ig.state.proxyUrl = process.env.IG_PROXY;
             excerpt: 'https://instagram.com/p/' + sp.code + '/\n\n' + (sp.caption ? sp.caption.text : '')
           })
         });
-        
+
+        console.log(`Saved ${i} out of ${newPosts.length} posts (${sp.code}).`);
+        i++;
+
         await fs.appendFile('instagram.txt', sp.code + '\n')
         
         await new Promise(r => setTimeout(r, 1000));
