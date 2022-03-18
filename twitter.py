@@ -122,7 +122,7 @@ while True:
                 i = i + 1
                 continue
             links.append(link)
-            title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div[1]/a'.format(i))
+            title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[{}]/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div[1]'.format(i))
             title = title.text.replace("\n", '')
             index = title.find('@')
             title = "Tweet from " + title[:index] + ' (' + title[index:] +  ')'
