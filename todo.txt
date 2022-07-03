@@ -1,7 +1,7 @@
 * better counters - especially when you run all scripts together
 * todos for individual scripts, especially performance in facebook
 * insta multiple images how?
-* use a secret manager?
+* use a secret manager? secure the .env file
 * insta: single images can be saved directly
 * insta: random uuid for multiple images, as a tag
 * insta: paginate and check each page for existence

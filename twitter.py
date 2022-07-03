@@ -99,7 +99,7 @@ last_height = driver.execute_script("return document.body.scrollHeight")
 
 already_added = False
 while True:
-    xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[1]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a")
+    xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[1]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div/div/div[2]/div/div[3]/a")
     if len(xpath_elems) != 0:
         link = xpath_elems[-1].get_attribute("href")
         if link in existing_links:
@@ -113,7 +113,7 @@ while True:
 
     i = 1
     while True:
-        xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/a".format(i))
+        xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div/div/div[2]/div/div[3]/a".format(i))
         if len(xpath_elems) == 0:
             break
         elif len(xpath_elems) == 1:
@@ -123,14 +123,16 @@ while True:
                 i = i + 1
                 continue
             links.append(link)
-            title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div[1]/div'.format(i))
+            title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div/div'.format(i))
             title = title.text.replace("\n", '')
+            title = title.split("·", 1)[0]
             index = title.find('@')
             title = "Tweet from " + title[:index] + ' (' + title[index:] +  ')'
+            print(title)
             titles.append(title)
-            text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[1]/div/span'.format(i))
+            text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[1]/div/span'.format(i))
             text = ''
-            alt_text = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img'.format(i))
+            alt_text = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img'.format(i))
             if len(text_elems) != 0:
                 text = text_elems[0].text
                 if len(alt_text) != 0:
