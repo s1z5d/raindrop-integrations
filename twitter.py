@@ -118,10 +118,10 @@ while True:
             break
         elif len(xpath_elems) == 1:
             link = xpath_elems[0].get_attribute("href")
-            print(link)
-            if link in links:
+            if link in links or link in existing_links: # check against existing links again since the first time we only check for the last elem, so some might still slip through
                 i = i + 1
                 continue
+            print(link)
             links.append(link)
             title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div/div'.format(i))
             title = title.text.replace("\n", '')
@@ -153,7 +153,6 @@ headers = {
     'Authorization': 'Bearer ' +  RAINDROP_TOKEN,
 }
 
-links = list(filter(lambda x: x not in existing_links, links))
 l = len(links)
 print('Adding ' + str(l) + ' links!')
 
