@@ -1,9 +1,13 @@
 * better counters - especially when you run all scripts together
 * todos for individual scripts, especially performance in facebook
 * insta multiple images how?
+* screenshots with the new fb plugin?
 * use a secret manager? secure the .env file
 * insta: single images can be saved directly
 * insta: random uuid for multiple images, as a tag
 * insta: paginate and check each page for existence
 * insta: fix unhandled promise error
 * put api call while writing to file for better recovery
+* start saving videos/images? via screenshots/downloads. insta api gives image urls.
+* start using some sort of archival service to save the entire webpage somehow?
+* twitter: use official api
