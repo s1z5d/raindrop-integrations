@@ -87,16 +87,24 @@ while True:
         # "pfbid" denotes an encoded link
         # if the link is not encoded, we don't need to pass it through the plugin
         if "pfbid" in link:
-            # Open new tab
-            driver.execute_script("window.open()")
-            tabs = driver.window_handles
-            driver.switch_to.window(tabs[1])
-            driver.get("https://www.facebook.com/plugins/post.php?href=" + link)
-            # time.sleep(3) # Wait for page to load
-            unique_link = driver.find_element_by_xpath("//a[contains(@href,'/posts/')]").get_attribute("href")
-            # Close tab
-            driver.execute_script("window.close()")
-            driver.switch_to.window(tabs[0])
+            if "permalink.php" in link:
+                # This is with some really old pages that don't have a "username" (?).
+                # E.g. https://www.facebook.com/permalink.php?story_fbid=pfbid0XHkWRs4j1DVBP1GUKrW1RzCxFD1akzMUoFKDLnHGyv22U3ZVtkRJpapNJgcXAECRl&id=100027717111855
+                # The plugin link doesn't work for these posts so we just have to save them as is.
+                # There is a chance that these posts might be saved multiple times (since we don't unobfuscate the url),
+                # but there's not much we can do at the moment.
+                unique_link = link
+            else:
+                # Open new tab
+                driver.execute_script("window.open()")
+                tabs = driver.window_handles
+                driver.switch_to.window(tabs[1])
+                driver.get("https://www.facebook.com/plugins/post.php?href=" + link)
+                # time.sleep(3) # Wait for page to load
+                unique_link = driver.find_element_by_xpath("//a[contains(@href,'/posts/')]").get_attribute("href")
+                # Close tab
+                driver.execute_script("window.close()")
+                driver.switch_to.window(tabs[0])
         else:
             unique_link = link
 
