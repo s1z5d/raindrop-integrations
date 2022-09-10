@@ -70,6 +70,19 @@ with open('facebook.txt', 'a+') as f:
     f.seek(0)
     existing_links = f.read()
 
+def unobfuscate_link(driver, link):
+    # Open new tab
+    driver.execute_script("window.open()")
+    tabs = driver.window_handles
+    driver.switch_to.window(tabs[1])
+    driver.get("https://www.facebook.com/plugins/post.php?href=" + link)
+    # time.sleep(3) # Wait for page to load
+    unique_link = driver.find_element_by_xpath("//a[contains(@href,'/posts/')]").get_attribute("href")
+    # Close tab
+    driver.execute_script("window.close()")
+    driver.switch_to.window(tabs[0])
+    return unique_link
+
 payloads = []
 links = []
 found = False
@@ -95,16 +108,7 @@ while True:
                 # but there's not much we can do at the moment.
                 unique_link = link
             else:
-                # Open new tab
-                driver.execute_script("window.open()")
-                tabs = driver.window_handles
-                driver.switch_to.window(tabs[1])
-                driver.get("https://www.facebook.com/plugins/post.php?href=" + link)
-                # time.sleep(3) # Wait for page to load
-                unique_link = driver.find_element_by_xpath("//a[contains(@href,'/posts/')]").get_attribute("href")
-                # Close tab
-                driver.execute_script("window.close()")
-                driver.switch_to.window(tabs[0])
+                unique_link = unobfuscate_link(driver, link)
         else:
             unique_link = link
 
@@ -138,6 +142,24 @@ while True:
                 'title': title + ' from Facebook'
             }
             payloads.append(payload)
+            # Sometimes, if a post has a URL in its text, Facebook
+            # will ask you to save the "link". This means that FB
+            # will actually save the link itself and not the post.
+            # The post itself will still be linked in the "Saved from..."
+            # subtitle. Since there is no way to see the "intent" of the
+            # save, we will save both. For the moment, I am only doing this
+            # for non-FB urls. This bit saves the post, the bit above will
+            # save the link. TODO: Consider not saving the link at all.
+            if 'facebook.com' not in cleaned_link:
+                post_link = unobfuscate_link(driver, subtitle_elems[0].get_attribute("href"))
+                post_link = re.sub(r"[\?|&](fbclid|h)=.*", '', urllib.parse.unquote(post_link.replace("https://l.facebook.com/l.php?u=", '')))
+                payload = {
+                    'link': post_link,
+                    'tags': ['facebook'],
+                    'excerpt': alt_title + '\n' + cleaned_link,
+                    'title': title + ' from Facebook'
+                }
+                payloads.append(payload)
     
     if found: break
     

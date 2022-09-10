@@ -11,3 +11,4 @@
 * start saving videos/images? via screenshots/downloads. insta api gives image urls.
 * start using some sort of archival service to save the entire webpage somehow?
 * twitter: use official api
+* fb: figure out what to do for saved "links". should we save both or only the post? this is rare so it probably doesn't matter either way.
