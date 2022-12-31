@@ -17,7 +17,11 @@ ig.state.proxyUrl = process.env.IG_PROXY;
 (async () => {
   // Execute all requests prior to authorization in the real Android application
   // Not required but recommended
-  await ig.simulate.preLoginFlow();
+  try {
+    await ig.simulate.preLoginFlow();
+  } catch (err) {
+    console.log(err);
+  }
   let loggedInUser;
   try {
     loggedInUser = await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
