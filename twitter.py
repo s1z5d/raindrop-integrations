@@ -123,6 +123,7 @@ while True:
                 continue
             print(link)
             links.append(link)
+            
             title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[1]/div/div/div[1]/div/div'.format(i))
             title = title.text.replace("\n", '')
             title = title.split("·", 1)[0]
@@ -130,13 +131,22 @@ while True:
             title = "Tweet from " + title[:index] + ' (' + title[index:] +  ')'
             print(title)
             titles.append(title)
-            text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[1]/div/span'.format(i))
+            
+            text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[1]'.format(i))
             text = ''
-            alt_text = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img'.format(i))
             if len(text_elems) != 0:
-                text = text_elems[0].text
-                if len(alt_text) != 0:
-                    text = text + '\n' + alt_text[-1].get_attribute("alt")
+                if "Replying to @" not in text_elems[0].text:
+                    text = text_elems[0].text
+                else:
+                    # for replies
+                    text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[2]'.format(i))
+                    if len(text_elems) != 0:
+                        text = text_elems[0].text
+
+            alt_texts = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/div/article/div/div/div/div[2]/div[2]/div[2]/div[2]//img'.format(i))
+            if len(alt_texts) != 0:
+                text = text + '\n' + '\n'.join(list(map(lambda x: x.get_attribute("alt"), alt_texts)))
+
             texts.append(text)
         i = i + 1
 
