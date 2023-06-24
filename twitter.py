@@ -91,6 +91,14 @@ with open('twitter.txt', 'a+') as f:
     f.seek(0)
     existing_links = f.read()
 
+link_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div/div[2]/div/div[3]/a"
+title_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div"
+text_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[2]"
+reply_text_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[3]"
+alt_text_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[3]/div/div/div/div/div/div/a/div/div[2]/div/img"
+
+
+
 # scroll to bottom of page https://stackoverflow.com/a/43299513
 SCROLL_PAUSE_TIME = 5
 
@@ -99,7 +107,7 @@ last_height = driver.execute_script("return document.body.scrollHeight")
 
 already_added = False
 while True:
-    xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[1]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div/div[2]/div/div[3]/a")
+    xpath_elems = driver.find_elements_by_xpath(link_xpath.format(1))
     if len(xpath_elems) != 0:
         link = xpath_elems[-1].get_attribute("href")
         if link in existing_links:
@@ -113,7 +121,7 @@ while True:
 
     i = 1
     while True:
-        xpath_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div/div[2]/div/div[3]/a".format(i))
+        xpath_elems = driver.find_elements_by_xpath(link_xpath.format(i))
         if len(xpath_elems) == 0:
             break
         elif len(xpath_elems) == 1:
@@ -124,7 +132,7 @@ while True:
             print(link)
             links.append(link)
             
-            title = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div'.format(i))
+            title = driver.find_element_by_xpath(title_xpath.format(i))
             title = title.text.replace("\n", '')
             title = title.split("·", 1)[0]
             index = title.find('@')
@@ -132,7 +140,7 @@ while True:
             print(title)
             titles.append(title)
             
-            text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[2]/div'.format(i))
+            text_elems = driver.find_elements_by_xpath(text_xpath.format(i))
             text = ''
             if len(text_elems) != 0:
                 if "Replying to" not in text_elems[0].text:
@@ -141,11 +149,11 @@ while True:
                     # for replies
                     # save "replying to" text jic "Replying to" was a false positive
                     text = text_elems[0].text
-                    text_elems = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[3]/div'.format(i))
+                    text_elems = driver.find_elements_by_xpath(reply_text_xpath.format(i))
                     if len(text_elems) != 0:
                         text = text + '\n' + text_elems[0].text
 
-            alt_texts = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[3]/div/div/div/div/div/div/a/div/div[2]/div/img'.format(i))
+            alt_texts = driver.find_elements_by_xpath(alt_text_xpath.format(i))
             if len(alt_texts) != 0:
                 text = text + '\n' + '\n'.join(list(map(lambda x: x.get_attribute("alt"), alt_texts)))
 
