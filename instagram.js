@@ -48,36 +48,42 @@ ig.state.proxyUrl = process.env.IG_PROXY;
   } catch {
     await fs.writeFile('instagram.txt', '');
   }
-  let savedPosts = []
-  savedFeed.items$.subscribe(
-    posts => savedPosts.push(...posts),
-    error => console.log(error),
-    async () => {
-      const newPosts = savedPosts.filter(sp => !alreadySavedPosts.includes(sp.code));
-      console.log(`Saving ${newPosts.length} Instagram post(s)...`);
-      let i = 1;
-      for (const sp of newPosts) {
-        const res = await fetch('https://api.raindrop.io/rest/v1/raindrop', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + process.env.RAINDROP_TOKEN,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            link: 'https://instagram.com/p/' + sp.code + '/',
-            tags: ['instagram'],
-            title: sp.user.full_name + ' on Instagram',
-            excerpt: 'https://instagram.com/p/' + sp.code + '/\n\n' + (sp.caption ? sp.caption.text : '')
-          })
-        });
-
-        console.log(`Saved ${i} out of ${newPosts.length} posts (${sp.code}).`);
-        i++;
-
-        await fs.appendFile('instagram.txt', sp.code + '\n')
-        
-        await new Promise(r => setTimeout(r, 1000));
+  let savedPosts = [];
+  let found = false;
+  while (!found) {
+    const posts = await savedFeed.items();
+    for (const p of posts) {
+      if (alreadySavedPosts.includes(p.code)) {
+        found = true;
+        break;
+      } else {
+        savedPosts.push(p);
       }
     }
-  )
+  }
+  const newPosts = savedPosts.filter(sp => !alreadySavedPosts.includes(sp.code));
+  console.log(`Saving ${newPosts.length} Instagram post(s)...`);
+  let i = 1;
+  for (const sp of newPosts) {
+    const res = await fetch('https://api.raindrop.io/rest/v1/raindrop', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + process.env.RAINDROP_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        link: 'https://instagram.com/p/' + sp.code + '/',
+        tags: ['instagram'],
+        title: sp.user.full_name + ' on Instagram',
+        excerpt: 'https://instagram.com/p/' + sp.code + '/\n\n' + (sp.caption ? sp.caption.text : '')
+      })
+    });
+
+    console.log(`Saved ${i} out of ${newPosts.length} posts (${sp.code}).`);
+    i++;
+
+    await fs.appendFile('instagram.txt', sp.code + '\n')
+    
+    await new Promise(r => setTimeout(r, 1000));
+  }
 })();
