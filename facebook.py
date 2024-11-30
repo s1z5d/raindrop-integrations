@@ -60,6 +60,8 @@ time.sleep(5)
 # save browser prompt
 driver.find_element_by_xpath('//span[normalize-space(text())="Trust this device"]').click()
 
+time.sleep(5)
+
 driver.get('https://www.facebook.com/saved')
 
 # scroll to bottom of page https://stackoverflow.com/a/43299513
