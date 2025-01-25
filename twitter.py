@@ -91,7 +91,7 @@ with open('twitter.txt', 'a+') as f:
     f.seek(0)
     existing_links = f.read()
 
-link_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div[2]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div/div[2]/div/div[3]/a"
+link_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div[2]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div/div[2]/div/div[3]//a"
 title_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div[2]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[1]/div/div[1]/div/div"
 text_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div[2]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[2]/div/span"
 reply_text_xpath = "/html/body/div[1]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div[2]/section/div/div/div[{}]/div/div/article/div/div/div[2]/div[2]/div[3]/div/span"

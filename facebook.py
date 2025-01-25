@@ -47,7 +47,9 @@ email_elem = driver.find_element_by_id('pass')
 email_elem.send_keys(FB_PASSWORD)
 email_elem.send_keys(Keys.ENTER)
 
-time.sleep(5)
+print('you have 30 seconds to beat the captcha before i crash')
+
+time.sleep(30)
 
 # get OTP
 otp_elem = driver.find_element_by_xpath('//label[normalize-space(text())="Code"]/preceding-sibling::input')
@@ -95,7 +97,7 @@ while True:
     # Grab links from titles (which always exist)
     # Unfortunately, we will grab _all_ the titles in a page after every scroll.
     # While this is mostly acceptable for incremental runs, it will be very slow for the first run.
-    title_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div/div/div/div/div[2]/a")
+    title_elems = driver.find_elements_by_xpath("/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[2]/div/div/div/div/div[2]/a")
     _links = list(map(lambda e: e.get_attribute("href"), title_elems))
     # Grab "new" links -- these are the ones we might want to test
     new_links_to_test = list(filter(lambda l: l not in links, _links))
