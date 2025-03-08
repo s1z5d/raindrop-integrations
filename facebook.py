@@ -57,7 +57,12 @@ totp = pyotp.TOTP(FB_OTP)
 otp_elem.send_keys(totp.now())
 otp_elem.send_keys(Keys.ENTER)
 
-time.sleep(5)
+time.sleep(10)
+
+# don't save login info
+driver.find_element_by_css_selector("div[aria-label='Close']").click()
+
+time.sleep(3)
 
 # save browser prompt
 driver.find_element_by_xpath('//span[normalize-space(text())="Trust this device"]').click()
