@@ -47,9 +47,9 @@ email_elem = driver.find_element_by_id('pass')
 email_elem.send_keys(FB_PASSWORD)
 email_elem.send_keys(Keys.ENTER)
 
-print('you have 30 seconds to beat the captcha before i crash')
+print('you have 3 minutes to beat the captcha before i crash')
 
-time.sleep(30)
+time.sleep(180)
 
 # get OTP
 otp_elem = driver.find_element_by_xpath('//label[normalize-space(text())="Code"]/preceding-sibling::input')
@@ -58,11 +58,6 @@ otp_elem.send_keys(totp.now())
 otp_elem.send_keys(Keys.ENTER)
 
 time.sleep(10)
-
-# don't save login info
-driver.find_element_by_css_selector("div[aria-label='Close']").click()
-
-time.sleep(3)
 
 # save browser prompt
 driver.find_element_by_xpath('//span[normalize-space(text())="Trust this device"]').click()
